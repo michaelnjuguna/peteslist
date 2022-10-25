@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-
+const world = require(__dirname+"/authentication/auth.js")
 // PORT
 const PORT = 3000;
 app.use(express.json());
@@ -14,5 +14,5 @@ app.post("/", (req, res) => {
 
 
 app.listen(PORT, () => {
-   console.log(`Server is running on PORT: ${PORT}`);
+   console.log(`Server is running on PORT: ${PORT} ` + world);
 });
