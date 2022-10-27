@@ -1,0 +1,32 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    font-size: 62.5%;
+}
+header{
+    width: 100vw;
+    height: 20vh;
+    background-color: #3880ff;
+    color: #fff;
+    font-size: 2rem;
+    text-align: center;
+    padding-top: 2rem;
+}
+.container{
+    background-color: #fff;
+    color: #222428;
+}
+ul{
+    text-align: left;
+    font-size: 1.6rem;
+    padding: 1rem;
+    width: 80vw;
+    margin: 0 auto;
+}
+li{
+    list-style: decimal;
+padding-block:.5rem ;
+}
