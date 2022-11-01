@@ -8,7 +8,6 @@ const passportLocalMongoose = require("passport-local-mongoose");
 // cors
 const cors = require("cors")
 // google auth
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
 // PORT
 const PORT = 3000;
 let findOrCreate = require("mongoose-findorcreate");
@@ -35,10 +34,20 @@ app.use(passport.session());
 mongoose.connect(uri);
 
 const userSchema = new mongoose.Schema({
-  userName: String,
+  firstName: String,
+  secondName: String,
   email: String,
+  number: String,
   employerStatus: Boolean,
   password: String,
+});
+const JobSchema = new mongoose.Schema({
+  userId: String,
+  title: String,
+  description: String,
+  email: String,
+  time: String,
+
 });
 userSchema.plugin(passportLocalMongoose);
 userSchema.plugin(findOrCreate);
@@ -48,20 +57,7 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.CLIENT_ID,
-      clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: "http://localhost:3000/auth/google/peteslist",
-    },
-    function (accessToken, refreshToken, profile, cb) {
-      User.findOrCreate({ googleId: profile.id }, function (err, user) {
-        return cb(err, user);
-      });
-    }
-  )
-);
+
 
 app.get("/", (req, res) => {
   res.send("This is home page.");
@@ -69,6 +65,11 @@ app.get("/", (req, res) => {
 
 app.post("/", (req, res) => {
   res.send("This is home page with post request.");
+});
+
+app.post("/signup", (req, res) => {
+  res.send({message:authenticated})
+  console.log("Signup successful");
 });
 
 // terms and conditions
@@ -84,5 +85,4 @@ app.listen(PORT, () => {
   console.log(`Server is running on PORT: ${PORT} `);
 });
 
-// todo:Add terms and conditions website to this server
-//todo:add declaration website to this server
+
