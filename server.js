@@ -3,8 +3,7 @@ const express = require("express");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
 const session = require("express-session");
-// const passport = require("passport");
-// const passportLocalMongoose = require("passport-local-mongoose");
+// TODO: Encrypt passwords
 // cors
 const cors = require("cors");
 // PORT
@@ -31,13 +30,14 @@ app.use(
   })
 );
 
+let nodemailer = require('nodemailer');
 // initialize passport
 // app.use(passport.initialize());
 // // use passport to setup a session
 // app.use(passport.session());
 // connect to database
 mongoose.connect(uri);
-
+let userEmail = "";
 const User = mongoose.model("User", {
   firstName: String,
   secondName: String,
@@ -47,20 +47,14 @@ const User = mongoose.model("User", {
   employer: String,
 });
 const Job = mongoose.model("Job",{
-  userId: String,
+  user: String,
   title: String,
   description: String,
   email: String,
   time: String,
 });
-// userSchema.plugin(passportLocalMongoose);
-// userSchema.plugin(findOrCreate);
-//const User = new mongoose.model("User", userSchema);
-// passport.use(User.createStrategy());
-// // create cookie
-// passport.serializeUser(User.serializeUser());
-// // let passport open the cookie and read data
-// passport.deserializeUser(User.deserializeUser());
+
+// send email
 
 app.get("/", (req, res) => {
   Job.find({},(err,result)=>{
@@ -68,13 +62,24 @@ app.get("/", (req, res) => {
       console.log(err);
     }else{
       if(result){
-        console.log(result);
+        
         res.send(result);
       }
     }
   })
   
 });
+// delete user
+app.delete("/",(req,res)=>{
+  console.log(userEmail);
+  User.deleteOne({email:userEmail},(err)=>{
+    if(err){
+      console.log(err);
+    }else{
+      res.json("deleted successfully")
+    }
+  })
+})
 
 app.post("/", (req, res) => {
   res.send("This is home page with post request.");
@@ -93,7 +98,7 @@ app.post("/login", (req, res) => {
     } else {
       if (result) {  
         if (result.password === password) {
-        
+        userEmail = result.email;
           console.log("Signed in");
           res.json("Login success");
         }else{
@@ -133,7 +138,10 @@ app.post("/signup", (req, res) => {
       if (result === null) {
         console.log(result);
         newUser.save();
+        userEmail = newUser.email;
         res.json("Signed successfully")
+      
+        
       }else{
         console.log(result);
         res.json("Already logged in")
@@ -141,24 +149,7 @@ app.post("/signup", (req, res) => {
     }
   });
 
-  // User.register(
-  //   { username: email },
-  //   password,
-  //   //  fname,
-  //   // sname,
-  //   // phoneNumber,
-  //   (err, user) => {
-  //     if (err) {
-  //       console.log(err);
-  //       res.json("not authenticated");
-  //     } else {
-  //       passport.authenticate("local")(req, res, () => {
-  //         res.json("authenticated");
-  //       });
-  //     }
-  //   }
-  // );
-  //console.log(fname,sname,email,phoneNumber,password);
+  
 });
 
 app.post("/jobs", (req, res) => {
@@ -167,13 +158,12 @@ app.post("/jobs", (req, res) => {
   const email = req.body.jobEmail;
 var today = new Date();
 var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-var dateTime = date+' '+time;
+var dateTime = date;
  
 console.log(dateTime)
   console.log(title, description, email);
   const newPost = new Job({
-    user: User.email,
+    user: userEmail,
     title: title,
     description: description,
     email: email,
