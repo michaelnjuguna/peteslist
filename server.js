@@ -46,7 +46,7 @@ const User = mongoose.model("User", {
   password: String,
   employer: String,
 });
-const JobSchema = new mongoose.Schema({
+const Job = mongoose.model("Job",{
   userId: String,
   title: String,
   description: String,
@@ -63,7 +63,17 @@ const JobSchema = new mongoose.Schema({
 // passport.deserializeUser(User.deserializeUser());
 
 app.get("/", (req, res) => {
-  res.send("This is home page.");
+  Job.find({},(err,result)=>{
+    if(err){
+      console.log(err);
+    }else{
+      if(result){
+        console.log(result);
+        res.send(result);
+      }
+    }
+  })
+  
 });
 
 app.post("/", (req, res) => {
@@ -150,6 +160,29 @@ app.post("/signup", (req, res) => {
   // );
   //console.log(fname,sname,email,phoneNumber,password);
 });
+
+app.post("/jobs", (req, res) => {
+  const title = req.body.jobTitle;
+  const description = req.body.jobDescription;
+  const email = req.body.jobEmail;
+var today = new Date();
+var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+var dateTime = date+' '+time;
+ 
+console.log(dateTime)
+  console.log(title, description, email);
+  const newPost = new Job({
+    user: User.email,
+    title: title,
+    description: description,
+    email: email,
+    time: dateTime,
+
+  })
+  newPost.save();
+  res.json("Successful");
+})
 
 // terms and conditions
 app.get("/terms", (req, res) => {
