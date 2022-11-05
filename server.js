@@ -44,7 +44,7 @@ const User = mongoose.model("User", {
   email: String,
   number: String,
   password: String,
-  employer: String
+  employer: String,
 });
 const JobSchema = new mongoose.Schema({
   userId: String,
@@ -71,22 +71,38 @@ app.post("/", (req, res) => {
 });
 // job posts
 app.get("/posts", (req, res) => {
-  res.json("not authenticated")
+  res.json("not authenticated");
 });
 app.post("/login", (req, res) => {
+  
   const email = req.body.mail;
   const password = req.body.pWord;
-  console.log(email, password);
-  res.json("Login: " + email);
+  User.findOne({ email: email }, (err, result) => {
+    if (err) {
+      console.log("Not found")
+    } else {
+      if (result) {  
+        if (result.password === password) {
+        
+          console.log("Signed in");
+          res.json("Login success");
+        }else{
+          res.json("User not found")
+        }
+      }
+    }
+  });
+  // console.log(email, password);
+  // res.json("Login: " + email);
 });
 
 app.post("/signup", (req, res) => {
+  console.log("signup");
   const fname = req.body.fname;
   const sname = req.body.sname;
   const email = req.body.email;
   const phoneNumber = req.body.phoneNumber;
   const password = req.body.password;
-  // register user
 
   const newUser = new User({
     firstName: fname,
@@ -95,10 +111,25 @@ app.post("/signup", (req, res) => {
     number: phoneNumber,
     // create a hashed password
     password: password,
-    employer:"False"
+    employer: "False",
   });
 
-  newUser.save().then(()=>res.json("successful signup"));
+  // register user
+  User.findOne({ email: email }, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+
+      if (result === null) {
+        console.log(result);
+        newUser.save();
+        res.json("Signed successfully")
+      }else{
+        console.log(result);
+        res.json("Already logged in")
+      }
+    }
+  });
 
   // User.register(
   //   { username: email },
@@ -118,7 +149,6 @@ app.post("/signup", (req, res) => {
   //   }
   // );
   //console.log(fname,sname,email,phoneNumber,password);
-  console.log("Signup successful");
 });
 
 // terms and conditions
