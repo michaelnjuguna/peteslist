@@ -14,6 +14,8 @@ let findOrCreate = require("mongoose-findorcreate");
 // data url
 const uri = "mongodb://localhost:27017/userDB";
 const app = express();
+app.use(express.json()); 
+app.use(express.urlencoded({extended: true}));
 // to serve terms and conditions and about page
 app.use(express.static("public"));
 app.set("view engine", "ejs");
@@ -68,7 +70,8 @@ app.post("/", (req, res) => {
 });
 
 app.post("/signup", (req, res) => {
-  res.send({message:authenticated})
+  console.log(req.body.fname)
+  res.json("signed up");
   console.log("Signup successful");
 });
 
