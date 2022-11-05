@@ -7,7 +7,6 @@ const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
 // cors
 const cors = require("cors")
-// google auth
 // PORT
 const PORT = 3000;
 let findOrCreate = require("mongoose-findorcreate");
@@ -25,14 +24,15 @@ app.use(cors())
 app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
-    secret: "Our little secret",
+    secret: "Our little secret.",
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: false
   })
 );
 
 app.use(passport.initialize());
 app.use(passport.session());
+// connect to database
 mongoose.connect(uri);
 
 const userSchema = new mongoose.Schema({
@@ -68,9 +68,20 @@ app.get("/", (req, res) => {
 app.post("/", (req, res) => {
   res.send("This is home page with post request.");
 });
+app.post("/login", (req, res) => {
+  const email = req.body.mail;
+  const password = req.body.pWord;
+  console.log(email, password);
+  res.json("Login: " + email)
+});
 
 app.post("/signup", (req, res) => {
-  console.log(req.body.fname)
+  const fname = req.body.fname;
+  const sname = req.body.sname;
+  const email = req.body.email;
+  const phoneNumber = req.body.phoneNumber;
+  const password = req.body.password;
+  console.log(fname,sname,email,phoneNumber,password);
   res.json("signed up");
   console.log("Signup successful");
 });
