@@ -7,7 +7,7 @@ const session = require("express-session");
 // cors
 const cors = require("cors");
 // PORT
-const PORT = 3000;
+const PORT =process.env.Port || 3000;
 //let findOrCreate = require("mongoose-findorcreate");
 // data url
 const mongo_url=process.env.MONGODB_URL;
